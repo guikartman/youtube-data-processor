@@ -7,6 +7,7 @@ import com.processor.youtubedataprocess.domain.YtVideo;
 import com.processor.youtubedataprocess.repository.TaskRepository;
 import com.processor.youtubedataprocess.repository.YtVideoRepository;
 import com.processor.youtubedataprocess.service.enums.Status;
+import com.processor.youtubedataprocess.service.exception.TaskNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -56,11 +58,12 @@ public class TaskServiceImpl implements TaskService {
     public List<YtVideo> getVideosByTaskId(Long id) {
         List<YtVideo> videos = Collections.emptyList();
         LOGGER.info("TaskServiceImpl - getVideosByTaskId - Getting videos by task id...");
-        Task task = taskRepository.getById(id);
-        if (Objects.isNull(task)) {
-            LOGGER.warn("TaskServiceImpl - getVideosByTaskId - Couldn't find any task with id = {}", id);
+        Optional<Task> task = taskRepository.findById(id);
+        if (task.isPresent()) {
+            videos = videoRepository.findAllByTask(task.get());
         } else  {
-            videos = videoRepository.findAllByTask(task);
+            LOGGER.warn("TaskServiceImpl - getVideosByTaskId - Couldn't find any task with id = {}", id);
+            throw new TaskNotFoundException(id);
         }
         return videos;
     }
