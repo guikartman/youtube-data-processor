@@ -1,9 +1,27 @@
 version: '3'
 
 services:
-  postgres-compose:
-    image: postgres
+  app:
+    container_name: youtube-data-process
+    image: 'youtube-data-process:latest'
+    ports:
+      - "8080:8080"
+    build: 
+        context: .
+    depends_on:
+      - db
     environment:
-      POSTGRES_PASSWORD: "admin"
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ytprocessor
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  db:
+    image: 'postgres:latest'
+    container_name: db
     ports:
       - "5432:5432"
+    environment: 
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=ytprocessor

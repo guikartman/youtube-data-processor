@@ -56,16 +56,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<YtVideo> getVideosByTaskId(Long id) {
-        List<YtVideo> videos = Collections.emptyList();
         LOGGER.info("TaskServiceImpl - getVideosByTaskId - Getting videos by task id...");
         Optional<Task> task = taskRepository.findById(id);
         if (task.isPresent()) {
-            videos = videoRepository.findAllByTask(task.get());
+            return videoRepository.findAllByTask(task.get());
         } else  {
             LOGGER.warn("TaskServiceImpl - getVideosByTaskId - Couldn't find any task with id = {}", id);
             throw new TaskNotFoundException(id);
         }
-        return videos;
     }
 
     public class YoutubeTask implements Runnable {
