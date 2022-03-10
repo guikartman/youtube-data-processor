@@ -1,14 +1,11 @@
 version: '3'
-
 services:
   app:
     container_name: youtube-data-process
-    image: 'youtube-data-process:latest'
+    image: 'ferreiragui/youtube-data-process-app:1.0.0'
     ports:
       - "8080:8080"
-    build: 
-        context: .
-    depends_on:
+    links:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ytprocessor
@@ -18,7 +15,6 @@ services:
 
   db:
     image: 'postgres:latest'
-    container_name: db
     ports:
       - "5432:5432"
     environment: 
